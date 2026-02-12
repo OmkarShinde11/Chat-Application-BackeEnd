@@ -1,5 +1,6 @@
-const sequelize=require('./utils/db-connection');
-require('./models/index');
+// const sequelize=require('./utils/db-connection');
+const sequelize=require('./db-connection');
+require('../models/index');
 
 
 (async () => {
