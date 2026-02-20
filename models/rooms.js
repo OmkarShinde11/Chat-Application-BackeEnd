@@ -10,6 +10,11 @@ const roomSchema=sequelize.define('Rooms',{
         type:DataTypes.STRING,
         allowNull:false,
     },
+    roomType:{
+        type: DataTypes.ENUM('group','user','ai'),
+        allowNull: false,
+        defaultValue: 'group',
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

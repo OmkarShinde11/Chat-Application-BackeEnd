@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
 const app=require('./app');
-const {Chat,User}=require('./models');
+const {Chat,User, ChatReaction}=require('./models');
 
 let roomNo;
 
@@ -80,6 +80,61 @@ io.on("connection", (socket) => {
         io.to(roomId).emit('new-message',fullMessage);
         // io.to(roomNo).emit('message',{user:'admin',text:'message Recived'});
         // callback();
+    })
+
+    socket.on('message:reaction',async({userId,emoji,chatId,roomId})=>{
+        console.log(userId,emoji,chatId,roomId);
+        const existingReaction=await ChatReaction.findOne({where:{
+            chat_id:chatId,
+            user_id:userId,
+        }});
+
+        // Create 
+        if(!existingReaction){
+            await ChatReaction.create({
+                chat_id:chatId,
+                user_id:userId,
+                emoji
+            })
+        } // If same then delete
+        else if(existingReaction.emoji===emoji){
+            await existingReaction.destroy();
+        }
+         // Update
+        else{
+            existingReaction.emoji=emoji;
+            await existingReaction.save();
+        }
+        let reaction=await ChatReaction.findAll({
+            where:{
+                chat_id:chatId
+            },
+            include:[
+                {
+                    model:User,
+                    as:'user',
+                    attributes:['id','name'],
+                }
+            ]
+        });
+
+        let obj={};
+        reaction.forEach((data)=>{
+            if(!obj[data.emoji]){
+                obj[data.emoji]={
+                    emoji:data.emoji,
+                    count:0,
+                    users:[],
+                }
+            };
+            obj[data.emoji].count++;
+            obj[data.emoji].users.push(data.user);
+        });
+        reaction=Object.values(obj);
+        io.to(roomId).emit("message:reaction:updated", {
+            chatId,
+            reaction,
+        });
     })
   
     socket.on("disconnect", () => {

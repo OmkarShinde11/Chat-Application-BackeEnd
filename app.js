@@ -21,7 +21,9 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.use(express.json({limit:'10kb'}));
+app.use(express.urlencoded());
 app.use('/api',limit);
+app.use('/Uploads',express.static('Uploads'));
 
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/room',roomRouter);

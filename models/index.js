@@ -3,6 +3,7 @@ const Room = require('./rooms');
 const Chat = require('./chats');
 const RoomMember = require('./roomMember');
 const ChatReaction=require('./chatReaction');
+const DeleteChatForMe=require('./DeleteForMe');
 const sequlize=require('../utils/db-connection');
 
 /* User ↔ RoomMembers */
@@ -56,6 +57,20 @@ User.hasMany(ChatReaction,{foreignKey:'user_id',as:'user'});
 ChatReaction.belongsTo(User,{
   as:'user',
   foreignKey:'user_id',
+});
+
+// User -> DeleteChatForMe
+User.hasMany(DeleteChatForMe,{foreignKey:'user_id',as:'deletedMessagesUser'});
+DeleteChatForMe.belongsTo(User,{
+  as:'user',
+  foreignKey:'user_id'
+});
+
+// Chat -> DeleteChatForMe
+Chat.hasMany(DeleteChatForMe,{foreignKey:'message_id',as:'deletedMessage'});
+DeleteChatForMe.belongsTo(Chat,{
+  as:'message',
+  foreignKey:'message_id'
 })
 
 module.exports = {
@@ -64,5 +79,6 @@ module.exports = {
   Chat,
   RoomMember,
   ChatReaction,
+  DeleteChatForMe,
   sequlize
 };

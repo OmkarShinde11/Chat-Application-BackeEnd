@@ -20,7 +20,33 @@ const Chat = sequelize.define('Chat', {
 
   message: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+
+  message_type: {
+    type: DataTypes.ENUM('text','image','video','audio','document'),
     allowNull: false,
+    defaultValue: 'text',
+  },
+
+  file_url: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+
+  file_name: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+
+  file_size: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
+  mime_type: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
   },
 
   created_at: {
@@ -32,9 +58,18 @@ const Chat = sequelize.define('Chat', {
     type:DataTypes.ENUM('user','system'),
     defaultValue:'user'
   },
+
   reply_to_message_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  is_deleted_for_everyone:{
+    type:DataTypes.BOOLEAN,
+    defaultValue:false,
+  },
+  deleted_for_everyone_at:{
+    type:DataTypes.DATE,
+    allowNull:true
   }
 
 }, {
